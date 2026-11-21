@@ -37,7 +37,15 @@ Use Node.js 24 or newer. Run the client-assignment regression tests with
    `http://<snapserver host>:1780`
 1. Enjoy :)
 
-Prebuilt versions can be downloaded as zip archive or debian package in [Releases](https://github.com/snapcast/snapweb/releases).
+The fork creates a [release](https://github.com/acfischer42/snapweb/releases)
+when a pull request is merged into `master`. It contains a ZIP of the web build
+and a Debian package, both built from the merged commit. Release tags combine
+the package version and pull request number (for example,
+`v0.9.4-sources.1-pr.12`); Debian package versions use
+`0.9.4-sources.1+pr.12-1` so successive releases can be upgraded with `apt`.
+Pull requests merged into `develop` do not create releases.
+The release workflow must also be present on the default branch (`develop`)
+for GitHub to run it.
 
 The built-in browser client gets a name such as `Snapweb Android - 12345678`,
 based on its detected platform and the beginning of its persistent browser
