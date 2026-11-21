@@ -39,6 +39,14 @@ Use Node.js 24 or newer. Run the client-assignment regression tests with
 
 Prebuilt versions can be downloaded as zip archive or debian package in [Releases](https://github.com/snapcast/snapweb/releases).
 
+The built-in browser client gets a name such as `Snapweb Android - 12345678`,
+based on its detected platform and the beginning of its persistent browser
+profile ID. Similar devices can therefore be distinguished; the actual device
+name is not available to the browser. A manually assigned client name takes
+precedence and can be set under Sinks, client options, then Details. The
+automatic name may change if browser storage is cleared or a different browser
+profile is used.
+
 ## Source player links
 
 The Sources tab lists Snapserver streams and their live title, artist and artwork,
