@@ -1,5 +1,42 @@
 # Snapweb changelog
 
+## Version 0.9.4-sources.1
+
+### Features
+
+- Add a Sources tab with now-playing information, playback controls and player links.
+- Show assigned clients and allow individual source changes with group-split warnings.
+- Support friendly source names through `display_name`.
+- Show pipe inputs when no player URL is configured.
+
+### Bugfixes
+
+- Use radio station metadata when artist information is missing.
+- Report assignment failures and preserve mute when leaving a muted group.
+
+_acfischer42 <git@fischernet.net>  Fri, 20 Nov 2026 19:28:45 +0100_
+
+## Version 0.10.0
+
+### Features
+
+- Add vorbis support (Issue #14, PR #162)
+
+### Bugfixes
+
+### General
+
+- Improve iOS background playback (Issue #161, PR #164))
+- Update packages
+
+### Contributors
+
+- @baschi29
+- @eshaz
+- @badaix
+
+_Johannes Pohl <snapweb@badaix.de>  Thu, 31 Dec 2026 00:13:37 +0200_
+
 ## Version 0.9.3
 
 ### Bugfixes
