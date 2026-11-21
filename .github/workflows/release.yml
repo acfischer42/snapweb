@@ -1,0 +1,82 @@
+name: Release
+
+on:
+  pull_request_target:
+    types: [closed]
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout merged commit
+      uses: actions/checkout@v7
+      with:
+        ref: ${{ github.event.pull_request.merge_commit_sha }}
+        fetch-depth: 0
+        persist-credentials: false
+
+    - name: Verify merged commit is on master
+      run: git merge-base --is-ancestor HEAD refs/remotes/origin/master
+
+    - name: Setup Node
+      uses: actions/setup-node@v7
+      with:
+        node-version: 24
+        cache: npm
+
+    - name: Install build dependencies
+      run: sudo apt-get update && sudo apt-get install -yq debhelper fakeroot zip
+      env:
+        DEBIAN_FRONTEND: noninteractive
+
+    - name: Install and test
+      run: |
+        npm ci
+        npm test
+        npm audit --omit=dev --audit-level=high
+
+    - name: Set release version
+      env:
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+      run: |
+        version=$(node -p "require('./package.json').version")
+        deb_version="${version}+pr.${PR_NUMBER}-1"
+        dpkg --validate-version "$deb_version"
+        echo "RELEASE_TAG=v${version}-pr.${PR_NUMBER}" >> "$GITHUB_ENV"
+        echo "DEB_VERSION=${deb_version}" >> "$GITHUB_ENV"
+
+    - name: Build Debian package and web archive
+      env:
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        VITE_APP_GITREV: ${{ github.event.pull_request.merge_commit_sha }}
+        GENERATE_SOURCEMAP: "false"
+      run: |
+        {
+          printf 'snapweb (%s) unstable; urgency=medium\n\n' "$DEB_VERSION"
+          printf '  * Release merged pull request #%s.\n\n' "$PR_NUMBER"
+          printf ' -- Snapweb release automation <noreply@github.com>  %s\n\n' "$(date -R)"
+          ./debian/changelog_md2deb.py changelog.md
+        } > debian/changelog
+        fakeroot make -f debian/rules clean
+        fakeroot make -f debian/rules binary
+        deb="../snapweb_${DEB_VERSION}_all.deb"
+        test -f "$deb"
+        test "$(dpkg-deb -f "$deb" Version)" = "$DEB_VERSION"
+        (cd dist && zip -qr "../snapweb-${RELEASE_TAG}.zip" .)
+        echo "DEB_PATH=${deb}" >> "$GITHUB_ENV"
+
+    - name: Publish release
+      env:
+        GH_TOKEN: ${{ github.token }}
+        MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+      run: |
+        gh release create "$RELEASE_TAG" "snapweb-${RELEASE_TAG}.zip" "$DEB_PATH" \
+          --target "$MERGE_SHA" --title "Snapweb ${RELEASE_TAG}" --generate-notes

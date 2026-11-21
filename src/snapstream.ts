@@ -1,4 +1,5 @@
 import { getPersistentValue } from './config.ts'
+import { browserClientName } from './clientName.ts'
 import { AudioContext, IAudioBuffer, IAudioContext, IAudioBufferSourceNode, IGainNode } from 'standardized-audio-context'
 
 // decoders
@@ -867,8 +868,8 @@ class SnapStream {
             hello.mac = "00:00:00:00:00:00";
             hello.arch = "web";
             hello.os = navigator?.platform || "unknown";
-            hello.hostname = "Snapweb client";
             hello.uniqueId = SnapStream.getClientId();
+            hello.hostname = browserClientName(hello.uniqueId, navigator.userAgent, navigator.platform, navigator.maxTouchPoints);
 
             this.sendMessage(hello);
             this.syncTime();

@@ -234,6 +234,10 @@ export default function Group(props: GroupProps) {
         my: 2,
         flexGrow: 1
       }}>
+        {groupClients}
+        <Box sx={{ py: 0.5 }} />
+        <Divider />
+        <Box sx={{ py: 0.5 }} />
         {/* <Stack spacing={2} direction="column" alignItems="center"> */}
         <Stack spacing={0} direction="column" sx={{ alignItems: "left" }}>
           <Grid
@@ -284,11 +288,6 @@ export default function Group(props: GroupProps) {
             <Box sx={{ py: 0.5 }} />
           }
         </Stack>
-        <Divider />
-        <Box sx={{ py: 0.5 }} />
-        <>
-          {groupClients}
-        </>
 
       </Card >
 
